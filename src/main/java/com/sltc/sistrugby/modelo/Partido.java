@@ -1,72 +1,106 @@
 package com.sltc.sistrugby.modelo;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.sltc.sistrugby.modelo.eventos.EventoPartido;
 
 /**
- * Representa un encuentro deportivo de la sección rugby del SLTC.
+ * Partido jugado por el SLTC. Aglutina plantel y eventos.
+ * Mantiene listas internas para uso en memoria durante la sesión activa;
+ * la persistencia real se delega al PartidoDAO y EventoDAO.
  */
 public class Partido {
 
-    public enum Sede    { LOCAL, VISITANTE }
-    public enum Estado  { PENDIENTE, FINALIZADO }
+    public enum Sede { LOCAL, VISITANTE }
+    public enum Estado { BORRADOR, FINALIZADO }
 
-    private int       id;
+    private int id;
     private LocalDate fecha;
-    private int       idClubRival;
-    private int       idDivision;
-    private Sede      sede;
-    private int       puntosLocal;
-    private int       puntosVisitante;
-    private int       temporada;
-    private Estado    estado;
+    private int idClubRival;
+    private int idCategoria;
+    private int idTemporada;
+    private Sede sede;
+    private int ptsLocal;
+    private int ptsVisitante;
+    private Estado estado;
 
-    public Partido() {}
+    // Composición: plantel + eventos del partido (cargados en demanda)
+    private List<PlantelPartido> plantel = new ArrayList<>();
+    private List<EventoPartido> eventos = new ArrayList<>();
 
-    public Partido(LocalDate fecha, int idClubRival, int idDivision,
-                   Sede sede, int temporada) {
-        this.fecha        = fecha;
-        this.idClubRival  = idClubRival;
-        this.idDivision   = idDivision;
-        this.sede         = sede;
-        this.temporada    = temporada;
-        this.estado       = Estado.PENDIENTE;
+    public Partido() {
+        this.estado = Estado.BORRADOR;
     }
 
-    /** Devuelve 'VICTORIA', 'DERROTA' o 'EMPATE' desde la perspectiva del SLTC. */
-    public String getResultado() {
-        if (puntosLocal > puntosVisitante) return "VICTORIA";
-        if (puntosLocal < puntosVisitante) return "DERROTA";
-        return "EMPATE";
+    public Partido(LocalDate fecha, int idClubRival, int idCategoria,
+                   int idTemporada, Sede sede) {
+        this.fecha = fecha;
+        this.idClubRival = idClubRival;
+        this.idCategoria = idCategoria;
+        this.idTemporada = idTemporada;
+        this.sede = sede;
+        this.ptsLocal = 0;
+        this.ptsVisitante = 0;
+        this.estado = Estado.BORRADOR;
     }
 
-    // ── Getters y setters ──────────────────────────────────────────────────────
+    public Partido(int id, LocalDate fecha, int idClubRival, int idCategoria,
+                   int idTemporada, Sede sede, int ptsLocal, int ptsVisitante,
+                   Estado estado) {
+        this.id = id;
+        this.fecha = fecha;
+        this.idClubRival = idClubRival;
+        this.idCategoria = idCategoria;
+        this.idTemporada = idTemporada;
+        this.sede = sede;
+        this.ptsLocal = ptsLocal;
+        this.ptsVisitante = ptsVisitante;
+        this.estado = estado;
+    }
 
-    public int       getId()                          { return id; }
-    public void      setId(int id)                    { this.id = id; }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public LocalDate getFecha() { return fecha; }
+    public void setFecha(LocalDate fecha) { this.fecha = fecha; }
+    public int getIdClubRival() { return idClubRival; }
+    public void setIdClubRival(int idClubRival) { this.idClubRival = idClubRival; }
+    public int getIdCategoria() { return idCategoria; }
+    public void setIdCategoria(int idCategoria) { this.idCategoria = idCategoria; }
+    public int getIdTemporada() { return idTemporada; }
+    public void setIdTemporada(int idTemporada) { this.idTemporada = idTemporada; }
+    public Sede getSede() { return sede; }
+    public void setSede(Sede sede) { this.sede = sede; }
+    public int getPtsLocal() { return ptsLocal; }
+    public void setPtsLocal(int ptsLocal) { this.ptsLocal = ptsLocal; }
+    public int getPtsVisitante() { return ptsVisitante; }
+    public void setPtsVisitante(int ptsVisitante) { this.ptsVisitante = ptsVisitante; }
+    public Estado getEstado() { return estado; }
+    public void setEstado(Estado estado) { this.estado = estado; }
 
-    public LocalDate getFecha()                       { return fecha; }
-    public void      setFecha(LocalDate fecha)        { this.fecha = fecha; }
+    public List<PlantelPartido> getPlantel() { return plantel; }
+    public void setPlantel(List<PlantelPartido> plantel) { this.plantel = plantel; }
 
-    public int       getIdClubRival()                 { return idClubRival; }
-    public void      setIdClubRival(int idClubRival)  { this.idClubRival = idClubRival; }
+    public List<EventoPartido> getEventos() { return eventos; }
+    public void setEventos(List<EventoPartido> eventos) { this.eventos = eventos; }
 
-    public int       getIdDivision()                  { return idDivision; }
-    public void      setIdDivision(int idDivision)    { this.idDivision = idDivision; }
+    /**
+     * Recalcula puntos del SLTC sumando polimórficamente los eventos cargados.
+     * Demuestra el beneficio del POLIMORFISMO: el cliente no conoce el tipo
+     * concreto del evento, solo llama a calcularPuntos().
+     */
+    public int recalcularPuntosSLTC() {
+        int total = 0;
+        for (EventoPartido e : eventos) {
+            total += e.calcularPuntos();
+        }
+        return total;
+    }
 
-    public Sede      getSede()                        { return sede; }
-    public void      setSede(Sede sede)               { this.sede = sede; }
-    public void      setSede(String sede)             { this.sede = Sede.valueOf(sede); }
-
-    public int       getPuntosLocal()                     { return puntosLocal; }
-    public void      setPuntosLocal(int puntosLocal)      { this.puntosLocal = puntosLocal; }
-
-    public int       getPuntosVisitante()                       { return puntosVisitante; }
-    public void      setPuntosVisitante(int puntosVisitante)    { this.puntosVisitante = puntosVisitante; }
-
-    public int       getTemporada()                   { return temporada; }
-    public void      setTemporada(int temporada)      { this.temporada = temporada; }
-
-    public Estado    getEstado()                      { return estado; }
-    public void      setEstado(Estado estado)         { this.estado = estado; }
-    public void      setEstado(String estado)         { this.estado = Estado.valueOf(estado); }
+    @Override
+    public String toString() {
+        return String.format("Partido #%d - %s - %s - %d vs %d - %s",
+                id, fecha, sede, ptsLocal, ptsVisitante, estado);
+    }
 }

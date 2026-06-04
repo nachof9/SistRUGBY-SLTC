@@ -1,0 +1,22 @@
+# Compilación
+out/
+build/
+*.class
+
+# IntelliJ
+.idea/
+*.iml
+
+# VSCode
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Salidas de smoke test
+smoke_output.txt
+sources.txt

@@ -3,82 +3,74 @@ package com.sltc.sistrugby.modelo;
 import java.time.LocalDate;
 
 /**
- * Representa un jugador del padrón deportivo del SLTC.
- * La baja es lógica: el campo estado cambia a INACTIVO;
- * el historial estadístico se conserva íntegro.
+ * Entidad del dominio: jugador de rugby del SLTC.
+ * Aplica el pilar de HERENCIA al extender {@link Persona} y reutilizar
+ * sus atributos comunes. Aplica ENCAPSULAMIENTO con atributos privados
+ * y acceso controlado por getters/setters.
  */
-public class Jugador {
+public class Jugador extends Persona {
 
-    public enum Estado {
-        ACTIVO, INACTIVO
-    }
+    public enum Estado { ACTIVO, INACTIVO }
 
-    private int       id;
-    private String    nombre;
-    private String    apellido;
-    private String    dni;
-    private LocalDate fechaNacimiento;
-    private String    posicion;
-    private int       idDivision;
-    private Estado    estado;
+    private String posicion;
+    private int idCategoria;
+    private Estado estado;
     private LocalDate fechaAlta;
+    private LocalDate fechaBaja;
 
-    public Jugador() {}
+    /** Constructor por defecto. */
+    public Jugador() {
+        super();
+        this.estado = Estado.ACTIVO;
+    }
 
+    /** Constructor de alta (sin id, asignado por la BD). */
     public Jugador(String nombre, String apellido, String dni,
-                   LocalDate fechaNacimiento, String posicion, int idDivision) {
-        this.nombre          = nombre;
-        this.apellido        = apellido;
-        this.dni             = dni;
-        this.fechaNacimiento = fechaNacimiento;
-        this.posicion        = posicion;
-        this.idDivision      = idDivision;
-        this.estado          = Estado.ACTIVO;
-        this.fechaAlta       = LocalDate.now();
+                   LocalDate fechaNacimiento, String posicion, int idCategoria) {
+        super(0, nombre, apellido, dni, fechaNacimiento);
+        this.posicion = posicion;
+        this.idCategoria = idCategoria;
+        this.estado = Estado.ACTIVO;
+        this.fechaAlta = LocalDate.now();
     }
 
-    /** Devuelve el nombre completo en formato "Apellido, Nombre". */
-    public String getNombreCompleto() {
-        return apellido + ", " + nombre;
+    /** Constructor completo (típicamente usado por el DAO al mapear filas). */
+    public Jugador(int id, String nombre, String apellido, String dni,
+                   LocalDate fechaNacimiento, String posicion,
+                   int idCategoria, Estado estado,
+                   LocalDate fechaAlta, LocalDate fechaBaja) {
+        super(id, nombre, apellido, dni, fechaNacimiento);
+        this.posicion = posicion;
+        this.idCategoria = idCategoria;
+        this.estado = estado;
+        this.fechaAlta = fechaAlta;
+        this.fechaBaja = fechaBaja;
     }
+
+    // ----- Getters / Setters -----
+
+    public String getPosicion() { return posicion; }
+    public void setPosicion(String posicion) { this.posicion = posicion; }
+
+    public int getIdCategoria() { return idCategoria; }
+    public void setIdCategoria(int idCategoria) { this.idCategoria = idCategoria; }
+
+    public Estado getEstado() { return estado; }
+    public void setEstado(Estado estado) { this.estado = estado; }
+
+    public LocalDate getFechaAlta() { return fechaAlta; }
+    public void setFechaAlta(LocalDate fechaAlta) { this.fechaAlta = fechaAlta; }
+
+    public LocalDate getFechaBaja() { return fechaBaja; }
+    public void setFechaBaja(LocalDate fechaBaja) { this.fechaBaja = fechaBaja; }
 
     public boolean estaActivo() {
-        return Estado.ACTIVO.equals(estado);
+        return estado == Estado.ACTIVO;
     }
 
-    // ── Getters y setters ──────────────────────────────────────────────────────
-
-    public int       getId()                       { return id; }
-    public void      setId(int id)                 { this.id = id; }
-
-    public String    getNombre()                   { return nombre; }
-    public void      setNombre(String nombre)      { this.nombre = nombre; }
-
-    public String    getApellido()                 { return apellido; }
-    public void      setApellido(String apellido)  { this.apellido = apellido; }
-
-    public String    getDni()                      { return dni; }
-    public void      setDni(String dni)            { this.dni = dni; }
-
-    public LocalDate getFechaNacimiento()                          { return fechaNacimiento; }
-    public void      setFechaNacimiento(LocalDate fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }
-
-    public String    getPosicion()                     { return posicion; }
-    public void      setPosicion(String posicion)      { this.posicion = posicion; }
-
-    public int       getIdDivision()                   { return idDivision; }
-    public void      setIdDivision(int idDivision)     { this.idDivision = idDivision; }
-
-    public Estado    getEstado()                       { return estado; }
-    public void      setEstado(Estado estado)          { this.estado = estado; }
-
-    public void      setEstado(String estado)          { this.estado = Estado.valueOf(estado); }
-
-    public LocalDate getFechaAlta()                    { return fechaAlta; }
-    public void      setFechaAlta(LocalDate fechaAlta) { this.fechaAlta = fechaAlta; }
-
     @Override
-    public String toString() {
-        return "Jugador{id=" + id + ", nombre='" + getNombreCompleto() + "', division=" + idDivision + '}';
+    public String descripcionCorta() {
+        return String.format("Jugador #%d - %s [%s] - DNI %s",
+                id, getNombreCompleto(), posicion, dni);
     }
 }

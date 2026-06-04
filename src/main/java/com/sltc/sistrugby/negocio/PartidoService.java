@@ -1,75 +1,60 @@
 package com.sltc.sistrugby.negocio;
 
-import com.sltc.sistrugby.modelo.EventoPartido;
-import com.sltc.sistrugby.modelo.Partido;
-import com.sltc.sistrugby.persistencia.ConexionDB;
-import com.sltc.sistrugby.persistencia.dao.PartidoDAO;
-import com.sltc.sistrugby.persistencia.impl.PartidoDAOImpl;
-
-import java.sql.*;
+import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
-/**
- * Lógica de negocio para la gestión de partidos y estadísticas.
- */
+import com.sltc.sistrugby.excepciones.DatosInvalidosException;
+import com.sltc.sistrugby.modelo.Partido;
+import com.sltc.sistrugby.modelo.PlantelPartido;
+import com.sltc.sistrugby.persistencia.PartidoDAO;
+
 public class PartidoService {
 
-    private final PartidoDAO partidoDAO;
+    private final PartidoDAO dao = new PartidoDAO();
 
-    public PartidoService() {
-        this.partidoDAO = new PartidoDAOImpl();
+    public Partido registrar(LocalDate fecha, int idClubRival, int idCategoria,
+                             int idTemporada, Partido.Sede sede)
+            throws DatosInvalidosException, SQLException {
+
+        if (fecha == null || fecha.isAfter(LocalDate.now()))
+            throw new DatosInvalidosException("Fecha del partido inválida");
+        if (idClubRival <= 0) throw new DatosInvalidosException("Club rival inválido");
+        if (idCategoria <= 0) throw new DatosInvalidosException("Categoría inválida");
+        if (idTemporada <= 0) throw new DatosInvalidosException("Temporada inválida");
+        if (sede == null) throw new DatosInvalidosException("Sede inválida");
+
+        Partido p = new Partido(fecha, idClubRival, idCategoria, idTemporada, sede);
+        return dao.insertar(p);
     }
 
-    /**
-     * Registra un nuevo partido. Retorna el id generado por MySQL.
-     *
-     * @throws IllegalArgumentException si faltan datos obligatorios.
-     */
-    public int registrarPartido(Partido partido) throws Exception {
-        if (partido.getFecha()       == null) throw new IllegalArgumentException("La fecha del partido es obligatoria.");
-        if (partido.getIdClubRival() <= 0)    throw new IllegalArgumentException("El club rival es obligatorio.");
-        if (partido.getIdDivision()  <= 0)    throw new IllegalArgumentException("La división es obligatoria.");
-        if (partido.getSede()        == null) throw new IllegalArgumentException("La sede del partido es obligatoria.");
-
-        return partidoDAO.insertar(partido);
+    public void registrarPlantel(int idPartido, List<PlantelPartido> plantel)
+            throws DatosInvalidosException, SQLException {
+        if (plantel == null || plantel.isEmpty())
+            throw new DatosInvalidosException("Plantel vacío");
+        long titulares = plantel.stream()
+                .filter(pp -> pp.getCondicion() == PlantelPartido.Condicion.TITULAR)
+                .count();
+        if (titulares < 1)
+            throw new DatosInvalidosException(
+                    "El plantel debe contener al menos un titular");
+        dao.guardarPlantel(idPartido, plantel);
     }
 
-    /**
-     * Registra un evento en un partido usando una transacción ACID.
-     * Si la inserción del evento falla, se realiza rollback completo.
-     */
-    public void registrarEvento(EventoPartido evento) throws Exception {
-        final String SQL =
-            "INSERT INTO eventos_partido (id_partido, id_jugador, tipo_evento, minuto) "
-            + "VALUES (?, ?, ?, ?)";
-
-        try (Connection conn = ConexionDB.obtenerConexion()) {
-            conn.setAutoCommit(false);
-            try (PreparedStatement ps = conn.prepareStatement(SQL)) {
-                ps.setInt(1,    evento.getIdPartido());
-                ps.setInt(2,    evento.getIdJugador());
-                ps.setString(3, evento.getTipoEvento().name());
-                if (evento.getMinuto() != null) {
-                    ps.setInt(4, evento.getMinuto());
-                } else {
-                    ps.setNull(4, Types.INTEGER);
-                }
-                ps.executeUpdate();
-                conn.commit();
-            } catch (SQLException ex) {
-                conn.rollback();
-                throw ex;
-            }
-        }
+    public Partido buscarPorId(int id) throws SQLException {
+        return dao.findById(id);
     }
 
-    /** Retorna todos los partidos finalizados. */
-    public List<Partido> listarFinalizados() throws Exception {
-        return partidoDAO.listarFinalizados();
+    public List<Partido> listarTodos() throws SQLException {
+        return dao.findAll();
     }
 
-    /** Retorna los partidos de una división y temporada específicas. */
-    public List<Partido> listarPorDivisionYTemporada(int idDivision, int temporada) throws Exception {
-        return partidoDAO.listarPorDivisionYTemporada(idDivision, temporada);
+    public List<PlantelPartido> obtenerPlantel(int idPartido) throws SQLException {
+        return dao.obtenerPlantel(idPartido);
+    }
+
+    public void actualizarMarcador(int idPartido, int ptsLocal, int ptsVisitante)
+            throws SQLException {
+        dao.actualizarPuntos(idPartido, ptsLocal, ptsVisitante);
     }
 }

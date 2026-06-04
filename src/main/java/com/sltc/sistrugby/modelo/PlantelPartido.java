@@ -1,36 +1,39 @@
 package com.sltc.sistrugby.modelo;
 
 /**
- * Asocia un jugador a un partido con su rol (titular/suplente).
- * Resuelve la relación N:M entre JUGADORES y PARTIDOS.
+ * Relación ternaria jugador-partido-condición:
+ * indica si un jugador fue titular o suplente en un partido determinado.
  */
 public class PlantelPartido {
 
-    public enum Rol { TITULAR, SUPLENTE }
+    public enum Condicion { TITULAR, SUPLENTE }
 
     private int id;
     private int idPartido;
     private int idJugador;
-    private Rol rol;
+    private Condicion condicion;
 
-    public PlantelPartido() {}
+    public PlantelPartido() { }
 
-    public PlantelPartido(int idPartido, int idJugador, Rol rol) {
+    public PlantelPartido(int idPartido, int idJugador, Condicion condicion) {
         this.idPartido = idPartido;
         this.idJugador = idJugador;
-        this.rol       = rol;
+        this.condicion = condicion;
     }
 
-    public int getId()                   { return id; }
-    public void setId(int id)            { this.id = id; }
+    public PlantelPartido(int id, int idPartido, int idJugador, Condicion condicion) {
+        this.id = id;
+        this.idPartido = idPartido;
+        this.idJugador = idJugador;
+        this.condicion = condicion;
+    }
 
-    public int  getIdPartido()                   { return idPartido; }
-    public void setIdPartido(int idPartido)      { this.idPartido = idPartido; }
-
-    public int  getIdJugador()                   { return idJugador; }
-    public void setIdJugador(int idJugador)      { this.idJugador = idJugador; }
-
-    public Rol  getRol()                 { return rol; }
-    public void setRol(Rol rol)          { this.rol = rol; }
-    public void setRol(String rol)       { this.rol = Rol.valueOf(rol); }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public int getIdPartido() { return idPartido; }
+    public void setIdPartido(int idPartido) { this.idPartido = idPartido; }
+    public int getIdJugador() { return idJugador; }
+    public void setIdJugador(int idJugador) { this.idJugador = idJugador; }
+    public Condicion getCondicion() { return condicion; }
+    public void setCondicion(Condicion condicion) { this.condicion = condicion; }
 }

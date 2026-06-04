@@ -1,54 +1,69 @@
 package com.sltc.sistrugby.modelo;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 /**
- * Representa un usuario del sistema con su rol de acceso.
- * La contraseña nunca se almacena en texto plano;
- * se usa el hash bcrypt almacenado en la base de datos.
+ * Entidad del dominio: usuario del sistema (Administrador, Entrenador, Secretario).
+ * Aplica HERENCIA al extender {@link Persona}.
+ *
+ * Las contraseñas se almacenan exclusivamente como hash PBKDF2 con salt
+ * (ver {@link com.sltc.sistrugby.util.HashUtil}). Jamás se persiste la
+ * contraseña en texto plano.
  */
-public class Usuario {
+public class Usuario extends Persona {
 
-    public enum Rol {
-        ADMINISTRADOR, ENTRENADOR, SECRETARIO
-    }
+    public enum Rol { ADMINISTRADOR, ENTRENADOR, SECRETARIO }
 
-    private int    id;
     private String nombreUsuario;
     private String contrasenaHash;
-    private Rol    rol;
+    private Rol rol;
     private boolean activo;
+    private LocalDateTime creadoEn;
 
-    public Usuario() {}
+    public Usuario() {
+        super();
+        this.activo = true;
+    }
 
     public Usuario(String nombreUsuario, String contrasenaHash, Rol rol) {
-        this.nombreUsuario  = nombreUsuario;
+        super();
+        this.nombreUsuario = nombreUsuario;
         this.contrasenaHash = contrasenaHash;
-        this.rol            = rol;
-        this.activo         = true;
+        this.rol = rol;
+        this.activo = true;
+        this.creadoEn = LocalDateTime.now();
     }
 
-    public boolean tieneRol(Rol r) {
-        return this.rol == r;
+    public Usuario(int id, String nombre, String apellido, String dni,
+                   LocalDate fechaNacimiento, String nombreUsuario,
+                   String contrasenaHash, Rol rol, boolean activo,
+                   LocalDateTime creadoEn) {
+        super(id, nombre, apellido, dni, fechaNacimiento);
+        this.nombreUsuario = nombreUsuario;
+        this.contrasenaHash = contrasenaHash;
+        this.rol = rol;
+        this.activo = activo;
+        this.creadoEn = creadoEn;
     }
 
-    // ── Getters y setters ──────────────────────────────────────────────────────
+    public String getNombreUsuario() { return nombreUsuario; }
+    public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario; }
 
-    public int getId()                    { return id; }
-    public void setId(int id)             { this.id = id; }
+    public String getContrasenaHash() { return contrasenaHash; }
+    public void setContrasenaHash(String contrasenaHash) { this.contrasenaHash = contrasenaHash; }
 
-    public String getNombreUsuario()                      { return nombreUsuario; }
-    public void   setNombreUsuario(String nombreUsuario)  { this.nombreUsuario = nombreUsuario; }
+    public Rol getRol() { return rol; }
+    public void setRol(Rol rol) { this.rol = rol; }
 
-    public String getContrasenaHash()                        { return contrasenaHash; }
-    public void   setContrasenaHash(String contrasenaHash)   { this.contrasenaHash = contrasenaHash; }
+    public boolean isActivo() { return activo; }
+    public void setActivo(boolean activo) { this.activo = activo; }
 
-    public Rol  getRol()          { return rol; }
-    public void setRol(Rol rol)   { this.rol = rol; }
-
-    public boolean isActivo()              { return activo; }
-    public void    setActivo(boolean activo) { this.activo = activo; }
+    public LocalDateTime getCreadoEn() { return creadoEn; }
+    public void setCreadoEn(LocalDateTime creadoEn) { this.creadoEn = creadoEn; }
 
     @Override
-    public String toString() {
-        return "Usuario{id=" + id + ", nombreUsuario='" + nombreUsuario + "', rol=" + rol + '}';
+    public String descripcionCorta() {
+        return String.format("Usuario '%s' - Rol: %s", nombreUsuario, rol);
     }
 }
