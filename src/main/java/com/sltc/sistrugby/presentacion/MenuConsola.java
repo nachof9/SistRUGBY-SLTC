@@ -20,15 +20,9 @@ import com.sltc.sistrugby.negocio.EstadisticaService;
 import com.sltc.sistrugby.negocio.EventoService;
 import com.sltc.sistrugby.negocio.JugadorService;
 import com.sltc.sistrugby.negocio.PartidoService;
+import com.sltc.sistrugby.negocio.ReporteService;
 import com.sltc.sistrugby.negocio.UsuarioService;
 
-/**
- * Menú interactivo por consola. Demuestra:
- *   - Estructuras de control: switch/case, while, for, if/else.
- *   - Manejo de excepciones con try/catch específicos.
- *   - Polimorfismo al imprimir eventos heterogéneos.
- *   - Uso de los servicios de la capa de negocio.
- */
 public class MenuConsola {
 
     private final Scanner sc = new Scanner(System.in);
@@ -39,16 +33,15 @@ public class MenuConsola {
     private final PartidoService     partidoSvc   = new PartidoService();
     private final EventoService      eventoSvc    = new EventoService();
     private final EstadisticaService estadSvc     = new EstadisticaService();
+    private final ReporteService     reporteSvc   = new ReporteService();
 
     private Usuario usuarioActual;
     private int intentosFallidos = 0;
 
     public void iniciar() {
         System.out.println("===========================================================");
-        System.out.println(" SistRUGBY-SLTC | Santiago Lawn Tennis Club | Prototipo TP3 ");
+        System.out.println(" SistRUGBY-SLTC | Santiago Lawn Tennis Club | Prototipo AP4 ");
         System.out.println("===========================================================");
-
-        // CU01 — Iniciar sesión (con bloqueo tras 3 fallidos)
         while (usuarioActual == null) {
             if (intentosFallidos >= 3) {
                 System.out.println("\n[BLOQUEO] Tres intentos fallidos. Saliendo.");
@@ -56,8 +49,6 @@ public class MenuConsola {
             }
             iniciarSesion();
         }
-
-        // Menú principal (acotado al rol del usuario)
         boolean salir = false;
         while (!salir) {
             mostrarMenuPrincipal();
@@ -72,6 +63,7 @@ public class MenuConsola {
                 case 7: deshacerUltimoEvento();  break;
                 case 8: mostrarRanking();        break;
                 case 9: darDeBajaJugador();      break;
+                case 10: exportarReporte();      break;
                 case 0: salir = true;            break;
                 default: System.out.println("Opción inválida.");
             }
@@ -79,7 +71,6 @@ public class MenuConsola {
         System.out.println("Sesión finalizada. ¡Hasta la próxima!");
     }
 
-    // --------------------- CU01: Login ---------------------
     private void iniciarSesion() {
         System.out.println("\n--- Iniciar sesión ---");
         System.out.print("Usuario: ");
@@ -111,10 +102,10 @@ public class MenuConsola {
         System.out.println("[7] Deshacer último evento (PILA undo)");
         System.out.println("[8] Ranking de jugadores por puntos (CU08)");
         System.out.println("[9] Dar de baja jugador (CU04)");
+        System.out.println("[10] Exportar reporte a archivo (CU09)");
         System.out.println("[0] Salir");
     }
 
-    // --------------------- CU02: Registrar jugador ---------------------
     private void registrarJugador() {
         System.out.println("\n--- CU02 Registrar jugador ---");
         try {
@@ -126,10 +117,8 @@ public class MenuConsola {
             System.out.print("Posición: ");    String pos = sc.nextLine();
             System.out.print("ID Categoría (1..8): ");
             int cat = Integer.parseInt(sc.nextLine());
-
             Jugador j = jugadorSvc.registrar(nom, ape, dni, fn, pos, cat);
             System.out.println("OK. Jugador creado: " + j.descripcionCorta());
-
         } catch (DatosInvalidosException | DniDuplicadoException e) {
             System.out.println("Error de validación: " + e.getMessage());
         } catch (DateTimeParseException e) {
@@ -145,14 +134,8 @@ public class MenuConsola {
         System.out.println("\n--- Padrón de jugadores (ordenado QuickSort) ---");
         try {
             List<Jugador> lista = jugadorSvc.listarOrdenadoPorApellido();
-            if (lista.isEmpty()) {
-                System.out.println("(Padrón vacío)");
-                return;
-            }
-            // Estructura de control: for-each polimórfico (toString -> descripcionCorta)
-            for (Jugador j : lista) {
-                System.out.println("  " + j);
-            }
+            if (lista.isEmpty()) { System.out.println("(Padrón vacío)"); return; }
+            for (Jugador j : lista) System.out.println("  " + j);
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -170,7 +153,6 @@ public class MenuConsola {
         }
     }
 
-    // --------------------- CU05: Registrar partido ---------------------
     private void registrarPartido() {
         System.out.println("\n--- CU05 Registrar partido ---");
         try {
@@ -184,10 +166,8 @@ public class MenuConsola {
             int temp = Integer.parseInt(sc.nextLine());
             System.out.print("Sede (LOCAL/VISITANTE): ");
             Partido.Sede sede = Partido.Sede.valueOf(sc.nextLine().toUpperCase());
-
             Partido p = partidoSvc.registrar(f, rival, cat, temp, sede);
             System.out.println("OK. Partido creado: " + p);
-
         } catch (DatosInvalidosException e) {
             System.out.println("Validación: " + e.getMessage());
         } catch (Exception e) {
@@ -195,7 +175,6 @@ public class MenuConsola {
         }
     }
 
-    // --------------------- CU06: Registrar plantel ---------------------
     private void registrarPlantel() {
         System.out.println("\n--- CU06 Registrar plantel ---");
         try {
@@ -205,7 +184,6 @@ public class MenuConsola {
             String[] titIds = sc.nextLine().split(",");
             System.out.print("IDs Jugadores suplentes (separados por coma, vacío si no hay): ");
             String[] supIds = sc.nextLine().split(",");
-
             List<PlantelPartido> plantel = new ArrayList<>();
             for (String s : titIds) {
                 if (!s.isBlank())
@@ -219,7 +197,6 @@ public class MenuConsola {
             }
             partidoSvc.registrarPlantel(idP, plantel);
             System.out.println("OK. Plantel cargado con " + plantel.size() + " jugadores.");
-
         } catch (DatosInvalidosException e) {
             System.out.println("Validación: " + e.getMessage());
         } catch (Exception e) {
@@ -227,7 +204,6 @@ public class MenuConsola {
         }
     }
 
-    // --------------------- CU07: Registrar evento (POLIMORFISMO) ------
     private void registrarEvento() {
         System.out.println("\n--- CU07 Registrar evento (polimórfico) ---");
         try {
@@ -241,11 +217,8 @@ public class MenuConsola {
             EventoPartido.Tipo t = EventoPartido.Tipo.valueOf(sc.nextLine().toUpperCase());
             System.out.print("Minuto (0-90): ");
             int min = Integer.parseInt(sc.nextLine());
-
             EventoPartido e = eventoSvc.registrarEvento(t, idP, idJ, min);
-            // toString polimórfico
             System.out.println("OK. Evento registrado: " + e);
-
         } catch (DatosInvalidosException e) {
             System.out.println("Validación: " + e.getMessage());
         } catch (IllegalArgumentException e) {
@@ -259,15 +232,12 @@ public class MenuConsola {
         System.out.println("\n--- Deshacer último evento (PILA undo LIFO) ---");
         try {
             EventoPartido e = eventoSvc.deshacerUltimo();
-            System.out.println(e == null
-                    ? "Nada para deshacer."
-                    : "Deshecho: " + e);
+            System.out.println(e == null ? "Nada para deshacer." : "Deshecho: " + e);
         } catch (Exception ex) {
             System.out.println("Error: " + ex.getMessage());
         }
     }
 
-    // --------------------- CU08: Ranking ---------------------
     private void mostrarRanking() {
         System.out.println("\n--- Ranking por puntos (POLIMORFISMO en calcularPuntos) ---");
         try {
@@ -287,7 +257,6 @@ public class MenuConsola {
         }
     }
 
-    // --------------------- CU04: Baja ---------------------
     private void darDeBajaJugador() {
         System.out.println("\n--- CU04 Dar de baja jugador ---");
         try {
@@ -297,6 +266,21 @@ public class MenuConsola {
             System.out.println("OK. Jugador #" + id + " ahora está INACTIVO.");
         } catch (JugadorNoEncontradoException e) {
             System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private void exportarReporte() {
+        System.out.println("\n--- CU09 Exportar reporte a archivo ---");
+        System.out.print("Nombre de archivo (enter = reporte_sltc.txt): ");
+        String ruta = sc.nextLine().trim();
+        if (ruta.isEmpty()) ruta = "reporte_sltc.txt";
+        try {
+            String absoluta = reporteSvc.exportarReporte(ruta);
+            System.out.println("OK. Reporte escrito en: " + absoluta);
+        } catch (java.io.IOException e) {
+            System.out.println("Error de escritura del archivo: " + e.getMessage());
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }

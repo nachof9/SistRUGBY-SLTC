@@ -4,45 +4,35 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/**
- * Conexión a la base de datos MySQL implementada bajo el patrón SINGLETON.
- *
- * Una única instancia compartida por todos los DAOs evita el costo de
- * apertura/cierre repetitivo de conexiones JDBC.
- *
- * Modo dual:
- *   - PRODUCCIÓN: lee URL/usuario/contraseña de variables de entorno.
- *   - DEMO sin MySQL instalado: se puede invocar
- *     {@link #activarModoMemoria()} para que los Service/DAO trabajen
- *     contra un repositorio en memoria (clase {@link RepositorioMemoria}).
- *
- * El cambio de modo es transparente para el resto del sistema gracias
- * al patrón DAO: las interfaces se mantienen, cambian solo las
- * implementaciones concretas.
- */
 public final class ConexionBD {
-
     private static ConexionBD instancia;
-
     private static final String URL_DEFAULT =
             "jdbc:mysql://localhost:3306/sistrugby_sltc"
-                    + "?useSSL=false&serverTimezone=America/Argentina/Buenos_Aires";
+                    + "?useSSL=false&allowPublicKeyRetrieval=true"
+                    + "&serverTimezone=America/Argentina/Buenos_Aires";
     private static final String USER_DEFAULT = "sistrugby_user";
 
     private Connection connection;
     private boolean modoMemoria = false;
+    private String motivoFallback;
 
-    private ConexionBD() throws SQLException {
+    private ConexionBD() {
         String url  = System.getenv().getOrDefault("DB_URL", URL_DEFAULT);
         String user = System.getenv().getOrDefault("DB_USER", USER_DEFAULT);
         String pass = System.getenv().getOrDefault("DB_PASS", "");
-
         if (pass.isEmpty()) {
-            // Modo demo: sin MySQL disponible — no se abre conexión real.
             this.modoMemoria = true;
+            this.motivoFallback = "DB_PASS no definida (modo demo en memoria).";
             return;
         }
-        this.connection = DriverManager.getConnection(url, user, pass);
+        try {
+            this.connection = DriverManager.getConnection(url, user, pass);
+            this.modoMemoria = false;
+        } catch (SQLException e) {
+            this.modoMemoria = true;
+            this.motivoFallback = "No se pudo conectar a MySQL (" + e.getMessage()
+                    + "). Se activa modo memoria.";
+        }
     }
 
     public static synchronized ConexionBD getInstance() throws SQLException {
@@ -55,27 +45,23 @@ public final class ConexionBD {
         return instancia;
     }
 
-    /**
-     * Fuerza el modo memoria para entornos de demo / pruebas.
-     * Una vez activado, los DAOs usarán {@link RepositorioMemoria}.
-     */
     public static synchronized void activarModoMemoria() {
+        if (instancia == null) instancia = new ConexionBD();
         try {
-            if (instancia == null) instancia = new ConexionBD();
-            instancia.modoMemoria = true;
             if (instancia.connection != null && !instancia.connection.isClosed()) {
                 instancia.connection.close();
             }
-            instancia.connection = null;
-        } catch (SQLException e) {
-            throw new IllegalStateException("No se pudo activar modo memoria", e);
+        } catch (SQLException ignored) { }
+        instancia.connection = null;
+        instancia.modoMemoria = true;
+        if (instancia.motivoFallback == null) {
+            instancia.motivoFallback = "Modo memoria activado explicitamente.";
         }
     }
 
     public Connection getConnection() { return connection; }
-
     public boolean isModoMemoria() { return modoMemoria; }
-
+    public String getMotivoFallback() { return motivoFallback; }
     public void cerrar() throws SQLException {
         if (connection != null && !connection.isClosed()) connection.close();
     }

@@ -14,18 +14,12 @@ import com.sltc.sistrugby.persistencia.EventoDAO;
 import com.sltc.sistrugby.persistencia.JugadorDAO;
 import com.sltc.sistrugby.persistencia.PartidoDAO;
 
-/**
- * Servicio que compila estadísticas individuales y grupales.
- */
 public class EstadisticaService {
 
     private final EventoDAO eventoDao = new EventoDAO();
     private final PartidoDAO partidoDao = new PartidoDAO();
     private final JugadorDAO jugadorDao = new JugadorDAO();
 
-    /**
-     * Clase interna estática: línea de ranking de jugadores por puntos.
-     */
     public static class FilaRanking {
         public final Jugador jugador;
         public int tries;
@@ -34,17 +28,11 @@ public class EstadisticaService {
         public int drops;
         public int tarjetas;
         public int puntosTotal;
-
         public FilaRanking(Jugador jugador) { this.jugador = jugador; }
     }
 
-    /**
-     * Compila el ranking total de jugadores por puntos aportados,
-     * iterando polimórficamente sobre todos los eventos del sistema.
-     */
     public List<FilaRanking> rankingPorPuntos() throws SQLException {
         Map<Integer, FilaRanking> mapa = new HashMap<>();
-
         for (Partido p : partidoDao.findAll()) {
             for (EventoPartido e : eventoDao.findByPartido(p.getId())) {
                 FilaRanking fila = mapa.computeIfAbsent(e.getIdJugador(), id -> {
@@ -68,10 +56,25 @@ public class EstadisticaService {
         return resultado;
     }
 
+    /**
+     * Resumen global: cantidad de eventos por tipo. Usa un ARREGLO int[] de
+     * tamano fijo (cantidad de valores del enum Tipo), complementario al
+     * ArrayList del ranking (cuyo tamano es dinamico).
+     */
+    public int[] conteoGlobalPorTipo() throws SQLException {
+        int[] conteo = new int[EventoPartido.Tipo.values().length];
+        for (Partido p : partidoDao.findAll()) {
+            for (EventoPartido e : eventoDao.findByPartido(p.getId())) {
+                conteo[e.getTipo().ordinal()]++;
+            }
+        }
+        return conteo;
+    }
+
     private Jugador buscarJugador(int id) {
         try {
             for (Jugador j : jugadorDao.findAll()) if (j.getId() == id) return j;
-        } catch (SQLException e) { /* ignorado en demo */ }
+        } catch (SQLException e) { }
         return null;
     }
 }
