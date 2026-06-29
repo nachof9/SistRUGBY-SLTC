@@ -13,7 +13,7 @@ import com.sltc.sistrugby.modelo.Jugador;
 /**
  * DAO de la entidad Jugador.
  */
-public class JugadorDAO {
+public class JugadorDAO implements JugadorDAOInterface {
 
     public Jugador insertar(Jugador j) throws SQLException {
         ConexionBD bd = ConexionBD.getInstance();

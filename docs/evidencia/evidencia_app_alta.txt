@@ -1,0 +1,37 @@
+[INFO] Conectado a MySQL (modo produccion). Los datos provienen de la base sistrugby_sltc.
+===========================================================
+ SistRUGBY-SLTC | Santiago Lawn Tennis Club | Prototipo AP4 
+===========================================================
+
+--- Iniciar sesión ---
+Usuario: Contraseña: Bienvenido, entrenador1 [ENTRENADOR]
+
+========== MENÚ PRINCIPAL ==========
+[1] Registrar jugador (CU02)
+[2] Listar jugadores (ordenado por apellido)
+[3] Buscar jugador por DNI (búsqueda binaria)
+[4] Registrar partido (CU05)
+[5] Registrar plantel de partido (CU06)
+[6] Registrar evento de partido (CU07)
+[7] Deshacer último evento (PILA undo)
+[8] Ranking de jugadores por puntos (CU08)
+[9] Dar de baja jugador (CU04)
+[10] Exportar reporte a archivo (CU09)
+[0] Salir
+Opción: 
+--- CU02 Registrar jugador ---
+Nombre: Apellido: DNI: Fecha nac. (YYYY-MM-DD): Posición: ID Categoría (1..8): OK. Jugador creado: Jugador #6 - Gomez, Pedro [Pilar] - DNI 40123456
+
+========== MENÚ PRINCIPAL ==========
+[1] Registrar jugador (CU02)
+[2] Listar jugadores (ordenado por apellido)
+[3] Buscar jugador por DNI (búsqueda binaria)
+[4] Registrar partido (CU05)
+[5] Registrar plantel de partido (CU06)
+[6] Registrar evento de partido (CU07)
+[7] Deshacer último evento (PILA undo)
+[8] Ranking de jugadores por puntos (CU08)
+[9] Dar de baja jugador (CU04)
+[10] Exportar reporte a archivo (CU09)
+[0] Salir
+Opción: Sesión finalizada. ¡Hasta la próxima!

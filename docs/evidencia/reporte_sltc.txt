@@ -1,0 +1,22 @@
+============================================================
+ SistRUGBY-SLTC - Reporte de estadisticas (CU09)
+ Generado: 2026-06-28 20:51:51
+============================================================
+
+RANKING DE JUGADORES POR PUNTOS
+JUGADOR                   | TRY  | CONV | PEN  | DROP | PUNTOS
+------------------------------------------------------------
+Casas, Federico           | 1    | 1    | 1    | 0    | 10
+Pereyra, Rodrigo          | 1    | 0    | 0    | 0    | 5
+
+RESUMEN GLOBAL POR TIPO DE EVENTO
+------------------------------------------------------------
+TRY                : 2
+CONVERSION         : 1
+PENAL              : 1
+DROP               : 0
+TARJETA_AMARILLA   : 0
+TARJETA_ROJA       : 0
+SUSTITUCION        : 0
+
+Fin del reporte.

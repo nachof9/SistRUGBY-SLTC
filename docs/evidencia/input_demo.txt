@@ -1,0 +1,14 @@
+entrenador1
+rugby2026
+2
+1
+Pedro
+Gomez
+40123456
+2000-03-15
+Pilar
+8
+8
+10
+
+0

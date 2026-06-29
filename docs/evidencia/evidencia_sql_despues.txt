@@ -1,0 +1,10 @@
++------------+----------+----------+----------+--------+
+| id_jugador | apellido | nombre   | dni      | estado |
++------------+----------+----------+----------+--------+
+|          1 | Pereyra  | Rodrigo  | 35211001 | activo |
+|          2 | Villalba | Matias   | 36089452 | activo |
+|          3 | Casas    | Federico | 34567890 | activo |
+|          4 | Herrera  | Gonzalo  | 37124500 | activo |
+|          5 | Ruiz     | Tomas    | 35980012 | activo |
+|          6 | Gomez    | Pedro    | 40123456 | activo |
++------------+----------+----------+----------+--------+

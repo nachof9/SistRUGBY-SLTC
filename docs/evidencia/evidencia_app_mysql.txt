@@ -1,0 +1,92 @@
+[INFO] Conectado a MySQL (modo produccion). Los datos provienen de la base sistrugby_sltc.
+===========================================================
+ SistRUGBY-SLTC | Santiago Lawn Tennis Club | Prototipo AP4 
+===========================================================
+
+--- Iniciar sesión ---
+Usuario: Contraseña: Bienvenido, entrenador1 [ENTRENADOR]
+
+========== MENÚ PRINCIPAL ==========
+[1] Registrar jugador (CU02)
+[2] Listar jugadores (ordenado por apellido)
+[3] Buscar jugador por DNI (búsqueda binaria)
+[4] Registrar partido (CU05)
+[5] Registrar plantel de partido (CU06)
+[6] Registrar evento de partido (CU07)
+[7] Deshacer último evento (PILA undo)
+[8] Ranking de jugadores por puntos (CU08)
+[9] Dar de baja jugador (CU04)
+[10] Exportar reporte a archivo (CU09)
+[0] Salir
+Opción: 
+--- Padrón de jugadores (ordenado QuickSort) ---
+  Jugador #3 - Casas, Federico [Apertura] - DNI 34567890
+  Jugador #4 - Herrera, Gonzalo [Ala derecho] - DNI 37124500
+  Jugador #1 - Pereyra, Rodrigo [Pilar] - DNI 35211001
+  Jugador #5 - Ruiz, Tomas [Zaguero] - DNI 35980012
+  Jugador #2 - Villalba, Matias [Hooker] - DNI 36089452
+
+========== MENÚ PRINCIPAL ==========
+[1] Registrar jugador (CU02)
+[2] Listar jugadores (ordenado por apellido)
+[3] Buscar jugador por DNI (búsqueda binaria)
+[4] Registrar partido (CU05)
+[5] Registrar plantel de partido (CU06)
+[6] Registrar evento de partido (CU07)
+[7] Deshacer último evento (PILA undo)
+[8] Ranking de jugadores por puntos (CU08)
+[9] Dar de baja jugador (CU04)
+[10] Exportar reporte a archivo (CU09)
+[0] Salir
+Opción: 
+--- CU02 Registrar jugador ---
+Nombre: Apellido: DNI: Fecha nac. (YYYY-MM-DD): Posición: ID Categoría (1..8): OK. Jugador creado: Jugador #6 - Gomez, Pedro [Pilar] - DNI 40123456
+
+========== MENÚ PRINCIPAL ==========
+[1] Registrar jugador (CU02)
+[2] Listar jugadores (ordenado por apellido)
+[3] Buscar jugador por DNI (búsqueda binaria)
+[4] Registrar partido (CU05)
+[5] Registrar plantel de partido (CU06)
+[6] Registrar evento de partido (CU07)
+[7] Deshacer último evento (PILA undo)
+[8] Ranking de jugadores por puntos (CU08)
+[9] Dar de baja jugador (CU04)
+[10] Exportar reporte a archivo (CU09)
+[0] Salir
+Opción: 
+--- Ranking por puntos (POLIMORFISMO en calcularPuntos) ---
+JUGADOR                   | TRY   | CONV  | PEN   | DROP  | PUNTOS
+---------------------------------------------------------------
+Casas, Federico           | 1     | 1     | 1     | 0     | 10
+Pereyra, Rodrigo          | 1     | 0     | 0     | 0     | 5
+
+========== MENÚ PRINCIPAL ==========
+[1] Registrar jugador (CU02)
+[2] Listar jugadores (ordenado por apellido)
+[3] Buscar jugador por DNI (búsqueda binaria)
+[4] Registrar partido (CU05)
+[5] Registrar plantel de partido (CU06)
+[6] Registrar evento de partido (CU07)
+[7] Deshacer último evento (PILA undo)
+[8] Ranking de jugadores por puntos (CU08)
+[9] Dar de baja jugador (CU04)
+[10] Exportar reporte a archivo (CU09)
+[0] Salir
+Opción: 
+--- CU09 Exportar reporte a archivo ---
+Nombre de archivo (enter = reporte_sltc.txt): OK. Reporte escrito en: C:\Users\ignaf\AppData\Local\Temp\claude\C--Users-ignaf-Downloads-TP3\dff58c6d-2288-4060-90e0-84df3deb7452\scratchpad\SistRUGBY-SLTC\reporte_sltc.txt
+
+========== MENÚ PRINCIPAL ==========
+[1] Registrar jugador (CU02)
+[2] Listar jugadores (ordenado por apellido)
+[3] Buscar jugador por DNI (búsqueda binaria)
+[4] Registrar partido (CU05)
+[5] Registrar plantel de partido (CU06)
+[6] Registrar evento de partido (CU07)
+[7] Deshacer último evento (PILA undo)
+[8] Ranking de jugadores por puntos (CU08)
+[9] Dar de baja jugador (CU04)
+[10] Exportar reporte a archivo (CU09)
+[0] Salir
+Opción: Sesión finalizada. ¡Hasta la próxima!

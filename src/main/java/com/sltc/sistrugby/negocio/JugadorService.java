@@ -9,6 +9,7 @@ import com.sltc.sistrugby.excepciones.DniDuplicadoException;
 import com.sltc.sistrugby.excepciones.JugadorNoEncontradoException;
 import com.sltc.sistrugby.modelo.Jugador;
 import com.sltc.sistrugby.persistencia.JugadorDAO;
+import com.sltc.sistrugby.persistencia.JugadorDAOInterface;
 import com.sltc.sistrugby.util.BuscadorJugadores;
 import com.sltc.sistrugby.util.OrdenadorJugadores;
 import com.sltc.sistrugby.util.ValidadorDNI;
@@ -19,7 +20,7 @@ import com.sltc.sistrugby.util.ValidadorDNI;
  */
 public class JugadorService {
 
-    private final JugadorDAO dao = new JugadorDAO();
+    private final JugadorDAOInterface dao = new JugadorDAO();
 
     public Jugador registrar(String nombre, String apellido, String dni,
                              LocalDate fechaNacimiento, String posicion,
